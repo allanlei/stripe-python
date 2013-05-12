@@ -1,74 +1,8 @@
-=== 1.9.0 2013-04-25
+=== 1.9.1 2013-05-12
 
-* Support for Python 3 (github issue #32)
-
-=== 1.8.0 2013-04-11
-
-* Allow transfers to be creatable
-* Add new stripe.Recipient resource
-
-=== 1.7.10 2013-02-21
-
-* Add 'id' to the list of permanent attributes
-
-=== 1.7.9 2013-02-01
-
-* Add support for passing options when retrieving Stripe objects
-  e.g., stripe.Charge.retrieve("foo", params={"expand":["customer"]})
-
-=== 1.7.8 2013-01-15
-
-* Add support for setting a Stripe API version override.
-
-=== 1.7.7 2012-12-18
-
-* Update requests version check to work with requests 1.x.x (github
-  issue #24)
-
-=== 1.7.6 2012-11-08
-
-* Add support for updating charge disputes
-
-=== 1.7.5 2012-10-30
-
-* Add support for creating invoices
-* Add support for new invoice lines return format
-* Add support for new List objects
-
-=== 1.7.4 2012-08-31
-
-* Add update and pay methods for Invoice resource
-
-=== 1.7.3 2012-08-15
-
-* Add new stripe.Account resource
-
-* Remove uncaptured_charge tests (this has been deprecated from the API).
-
-=== 1.7.2 2012-05-31
-
-* Fix a bug that would cause nested objects to be mis-rendered in
-  __str__ and __repr__ methods (github issues #17, #18)
-
-=== 1.7.1 2012-05-21
-
-* Prefer App Engine's urlfetch over requests, as that's the only thing
-  that will work in App Engine's environment. Previously, if requests
-  was available in the App Engine environment, we would attempt to use
-  it.
-
-=== 1.7.0 2012-05-17
-
-* Add new delete_discount method to stripe.Customer
-
-* Add new stripe.Transfer resource
-
-* Switch from using HTTP Basic auth to Bearer auth. (Note: Stripe will
-  support Basic auth for the indefinite future, but recommends Bearer
-  auth when possible going forward)
-
-* Numerous test suite improvements
-
-=== 1.6.1 2011-09-14
-
-* Parameters with value None are no longer included in API requests
+* Fork of stripe-python 1.9.1
+* Rewrite to use only requests
+* Requires instantiation of Stripe object instead of module level access
+* Dropped support of python-2.5
+* Use requests.compat layer instead of build_py_2to3
+* Add python-3.1 to tox

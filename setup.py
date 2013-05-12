@@ -2,49 +2,35 @@ import os
 import sys
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+    from distutils.core import setup, find_packages
 
-try:
-    from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-    from distutils.command.build_py import build_py
 
-# Don't import stripe module here, since deps may not be installed
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'stripe'))
-import importer
-import version
-
-path, script = os.path.split(sys.argv[0])
-os.chdir(os.path.abspath(path))
-
-requests = 'requests >= 0.8.8'
-if sys.version_info < (2, 6):
-  requests += ', < 0.10.1'
-install_requires = [requests]
-
-# Get simplejson if we don't already have json
-try:
-  importer.import_json()
-except ImportError:
-  install_requires.append('simplejson')
-
-try:
-  import json
-  _json_loaded = hasattr(json, 'loads')
-except ImportError:
-  pass
-
-setup(name='stripe',
-      cmdclass = {'build_py': build_py},
-      version=version.VERSION,
-      description='Stripe python bindings',
-      author='Stripe',
-      author_email='support@stripe.com',
-      url='https://stripe.com/',
-      packages=['stripe','stripe.test'],
-      package_data={'stripe' : ['data/ca-certificates.crt', '../VERSION']},
-      install_requires=install_requires,
-      test_suite='stripe.test',
+setup(
+    name='stripe-requests',
+    version='1.9.1-dev',
+    description='Stripe python bindings using requests',
+    author='Allan Lei',
+    author_email='allanlei@helveticode.com',
+    url='https://github.com/allanlei/stripe-requests',
+    license=open('LICENSE').read(),
+    packages=find_packages(),
+    package_data={'stripe': ['data/ca-certificates.crt']},
+    install_requires=[
+        'requests >= 1.2.0, < 1.3.0',
+    ],
+    test_suite='stripe.tests',
+    classifiers=(
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.1',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: Implementation :: PyPy',
+    ),
 )
