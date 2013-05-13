@@ -69,7 +69,7 @@ class Stripe(object):
         self.suppress_non_https = suppress_non_https
 
         self.session.headers.update({
-            'User-Agent' : 'Stripe/v1 PythonBindings/{version}'.format(version=__version__),
+            'User-Agent' : 'stripe-requests/{version}'.format(version=__version__),
             'X-Stripe-Client-User-Agent' : json.dumps({
                 'bindings_version' : __version__,
                 'lang': 'python',
