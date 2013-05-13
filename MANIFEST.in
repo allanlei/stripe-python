@@ -1,1 +1,4 @@
-include VERSION stripe/data/ca-certificates.crt
+include stripe/data/ca-certificates.crt
+include LICENSE
+include CHANGELOG
+include README.md
