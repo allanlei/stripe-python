@@ -1,5 +1,7 @@
 = Stripe Python bindings
 
+[![Build Status](https://travis-ci.org/allanlei/stripe-requests.png?branch=develop)](https://travis-ci.org/allanlei/stripe-requests)
+
 == Installation
 
 You don't need this source code unless you want to modify the

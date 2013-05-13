@@ -7,11 +7,10 @@ try:
 except ImportError:
     from distutils.core import setup, find_packages
 
-from stripe import __version__
 
 setup(
     name='stripe-requests',
-    version=__version__,
+    version='1.9.1-dev',
     description='Stripe python bindings using requests',
     author='Allan Lei',
     author_email='allanlei@helveticode.com',
