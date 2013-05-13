@@ -1,5 +1,5 @@
 from requests.compat import (basestring, str, urlparse, urlunparse, json, 
-    quote_plus, is_py2, is_py3)
+    quote_plus, urljoin, is_py2, is_py3)
 from requests.compat import urlencode as urllib_urlencode
 
 if is_py2:
@@ -17,6 +17,7 @@ def utf8(value):
     if isinstance(value, str) and sys.version_info < (3, 0):
         return value.encode('utf-8')
     return value
+
 
 def urlencode(obj):
     def urlencode_list(stk, key, listvalue):

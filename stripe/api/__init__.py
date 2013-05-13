@@ -7,10 +7,10 @@ logger = logging.getLogger('stripe')
 
 
 class Account(SingletonAPIResource):
-    resource_uri = '/account'
+    resource_uri = 'account'
 
 class Charge(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
-    resource_uri = '/charges'
+    resource_uri = 'charges'
 
     def refund(self, **params):
         requestor = self.stripe
@@ -31,7 +31,7 @@ class Charge(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
         return self.dispute
 
 class Customer(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource, DeletableAPIResource):
-    resource_uri = '/customers'
+    resource_uri = 'customers'
 
     def add_invoice_item(self, **params):
         params['customer'] = self.id
@@ -71,7 +71,7 @@ class Customer(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource
         self.refresh_from({ 'discount' : None }, True)
 
 class Invoice(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource):
-    resource_uri = '/invoices'
+    resource_uri = 'invoices'
 
     def pay(self):
         from .utils import convert_to_stripe_object
@@ -88,25 +88,25 @@ class Invoice(CreateableAPIResource, ListableAPIResource, UpdateableAPIResource)
         return convert_to_stripe_object(response, stripe=stripe)
 
 class InvoiceItem(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource, DeletableAPIResource):
-    resource_uri = '/invoiceitems'
+    resource_uri = 'invoiceitems'
 
 class Plan(CreateableAPIResource, DeletableAPIResource, UpdateableAPIResource, ListableAPIResource):
-    resource_uri = '/plans'
+    resource_uri = 'plans'
 
 class Token(CreateableAPIResource):
-    resource_uri = '/tokens'
+    resource_uri = 'tokens'
 
 class Coupon(CreateableAPIResource, DeletableAPIResource, ListableAPIResource):
-    resource_uri = '/coupons'
+    resource_uri = 'coupons'
 
 class Event(ListableAPIResource):
-    resource_uri = '/events'
+    resource_uri = 'events'
 
 class Transfer(CreateableAPIResource, ListableAPIResource):
-    resource_uri = '/transfers'
+    resource_uri = 'transfers'
 
 class Recipient(CreateableAPIResource, UpdateableAPIResource, ListableAPIResource, DeletableAPIResource):
-    resource_uri = '/recipients'
+    resource_uri = 'recipients'
 
     def transfers(self, **params):
         params['recipient'] = self.id

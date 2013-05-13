@@ -18,7 +18,7 @@ Full documentation is at <https://stripe-requests.readthedocs.org>.
 """
 
 __title__ = 'stripe-requests'
-__version__ = '1.9.1'
+__version__ = '1.9.1-dev'
 __author__ = 'Allan Lei'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2013 Allan Lei'
@@ -26,7 +26,6 @@ __copyright__ = 'Copyright 2013 Allan Lei'
 
 import os
 import platform
-import textwrap
 import logging
 import requests
 
@@ -43,30 +42,24 @@ __all__ = ['StripeObject', 'Charge', 'Coupon', 'Plan', 'Transfer', 'Recipient',
 
 StripeObjectEncoder = JSONEncoder
 
-STRIPE_API_BASE_V1 = 'https://api.stripe.com/v1'
+STRIPE_API_BASE_V1 = 'https://api.stripe.com/v1/'
 STRIPE_API_BASE = STRIPE_API_BASE_V1
-STRIPE_CA_CERT_BUNDLE= os.path.join(os.path.dirname(__file__), 'data/ca-certificates.crt')
 
 logger = logging.getLogger('stripe')
 
 
 class Stripe(object):
-    ca_cert_bundle = None
-
-    def __init__(self, api_key=None, verify_ssl_certs=True, 
-            api_version=None, api_base=STRIPE_API_BASE, session_class=requests.Session, 
-            ca_cert_bundle=STRIPE_CA_CERT_BUNDLE, suppress_non_https=False):
+    def __init__(self, api_key=None, verify_ssl_certs=True, api_version=None, 
+            api_base=STRIPE_API_BASE, session_class=requests.Session):
         super(Stripe, self).__init__()
         self.session = session_class()
         self.session.mount('http://', HTTPAdapter())
         self.session.mount('https://', HTTPAdapter())
         self.session.auth = OAuth2Auth()
         self.api_key = api_key
-        self.ca_cert_bundle = ca_cert_bundle
         self.verify_ssl_certs = verify_ssl_certs
         self.api_version = api_version
         self.api_base = api_base
-        self.suppress_non_https = suppress_non_https
 
         self.session.headers.update({
             'User-Agent' : 'Stripe/v1 PythonBindings/{version}'.format(version=__version__),
@@ -101,21 +94,9 @@ class Stripe(object):
             setattr(self, res, Resource)
 
     def request(self, method, url, *args, **kwargs):
-        if kwargs.get('api_key', None):
+        if 'api_key' in kwargs:
             kwargs.setdefault('auth', OAuth2Auth(kwargs.pop('api_key')))
-
-        kwargs.setdefault('timeout', 80)
-
-        if url and url.startswith('/') and self.api_base:
-            url = '{base}{path}'.format(base=self.api_base, path=url)
-
-        if not url:
-            raise InvalidRequestError('Could not determine which URL to request')
-
-        if method.lower() not in ['get', 'delete', 'post']:
-            raise APIConnectionError('Unrecognized HTTP method %r.  This may indicate a bug in the Stripe bindings.  Please contact support@stripe.com for assistance.' % (method, ))
-        if not self.api_key:
-            raise AuthenticationError('No API key provided. (HINT: set your API key using "stripe.api_key = <API-KEY>"). You can generate API keys from the Stripe web interface.  See https://stripe.com/api for details, or email support@stripe.com if you have any questions.')
+        url = urljoin(self.api_base, url)
 
         data = kwargs.get('data', None)
         if data and not isinstance(data, basestring):
@@ -128,26 +109,16 @@ class Stripe(object):
             query.update(kwargs.pop('params'))
             url_parts[4] = urlencode(query)
             url = urlunparse(url_parts)
+
         try:
             response = self.session.request(method, url, *args, **kwargs)
-
+        except requests.exceptions.ConnectionError as e:
+            raise InsecureConnectionError(str(e))
         except requests.exceptions.RequestException as e:
-            msg = 'Unexpected error communicating with Stripe.  If this problem persists, let us know at support@stripe.com.'
-            err = "%s: %s" % (type(e).__name__, str(e))
-            raise APIConnectionError(textwrap.fill(msg) + "\n\n(Network error: " + err + ")")
+            # Reraise as APIConnectionError
+            raise APIConnectionError(str(e))
 
-        if self.suppress_non_https:
-            try:
-                response.raise_for_status()
-            except InsecureConnectionError:
-                pass
-        else:
-            response.raise_for_status()
-
-        logger.info('API request to {url} returned (response code, response body) of ({code}, {body})'.format(
-            url=response.request.url, 
-            code=response.status_code, 
-            body=response.text))
+        response.raise_for_status()
         return response.json()
 
     @property
@@ -164,7 +135,7 @@ class Stripe(object):
 
     @verify_ssl_certs.setter
     def verify_ssl_certs(self, verify):
-        self.session.verify = verify and self.ca_cert_bundle
+        self.session.verify = bool(verify)
 
     @property
     def api_version(self):

@@ -1,3 +1,4 @@
+import warnings
 import requests
 
 from requests.structures import CaseInsensitiveDict
@@ -9,27 +10,31 @@ from . import errors
 
 
 class OAuth2Auth(requests.auth.AuthBase):
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, required=True, restrict_to_https=True):
         self.api_key = api_key
+        self.required = required
+        self.restrict_to_https = restrict_to_https
 
-    def __call__(self, req):
-        if self.api_key:
-            req.headers['Authorization'] = 'Bearer {api_key}'.format(
-                api_key=self.api_key)
-        return req
+    def __call__(self, request):
+        if self.required and not self.api_key:
+            raise errors.AuthenticationError('No API key provided.')
+
+        if not request.url.startswith('https://'):
+            warnings.warn('Sending API key over unsecure connection')
+            
+            if self.restrict_to_https:
+                raise errors.InsecureConnectionError()
+
+        request.headers['Authorization'] = 'Bearer {api_key}'.format(
+            api_key=self.api_key)
+        return request
 
 
 class Response(requests.models.Response):
     def raise_for_status(self):
-        HTTPErrorClass = errors.StripeError
-        http_error_msg = ''
+        HTTPErrorClass = None
+        http_error_msg = None
         error = {}
-
-        if 400 <= self.status_code < 500:
-            http_error_msg = '%s Client Error: %s' % (self.status_code, self.reason)
-
-        elif 500 <= self.status_code < 600:
-            http_error_msg = '%s Server Error: %s' % (self.status_code, self.reason)
 
         try:
             error = self.json()['error']
@@ -48,6 +53,7 @@ class Response(requests.models.Response):
 
         if http_error_msg and HTTPErrorClass:
             raise HTTPErrorClass(http_error_msg, response=self)
+        return super(Response, self).raise_for_status()
 
 
 class HTTPAdapter(requests.adapters.HTTPAdapter):

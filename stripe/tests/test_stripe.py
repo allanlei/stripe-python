@@ -64,23 +64,9 @@ class FunctionalTests(StripeTestCase):
         api_base = self.stripe.api_base
         try:
             self.stripe.api_base = api_base.replace('https://', 'http://')
-            self.assertRaises(stripe.InsecureConnectionError, self.stripe.Customer.create)
+            self.assertRaises((stripe.InsecureConnectionError, stripe.APIConnectionError), self.stripe.Customer.create)
         finally:
             self.stripe.api_base = api_base
-
-    def test_non_ssl_suppressed(self):
-        api_base = self.stripe.api_base
-        suppress_non_https = self.stripe.suppress_non_https
-
-        try:
-            self.stripe.api_base = api_base.replace('https://', 'http://')
-            self.stripe.suppress_non_https = True
-            self.stripe.Customer.create()
-        except stripe.InsecureConnectionError:
-            self.fail('Insecure connection was not suppressed')
-        finally:
-            self.stripe.api_base = api_base
-            self.stripe.suppress_non_https = suppress_non_https
 
     def test_run(self):
         charge = self.stripe.Charge.create(**DUMMY_CHARGE)
