@@ -1,18 +1,22 @@
-= Stripe Python bindings
+# Stripe Python bindings
 
 [![Build Status](https://travis-ci.org/allanlei/stripe-requests.png?branch=develop)](https://travis-ci.org/allanlei/stripe-requests)
 
-== Installation
+## Installation
 
 You don't need this source code unless you want to modify the
 package. If you just want to use the Stripe Python bindings, you
 should run:
 
-  pip install --upgrade stripe-requests
+```python
+pip install --upgrade stripe-requests
+```
 
 or
 
-  easy_install --upgrade stripe-requests
+```python
+easy_install --upgrade stripe-requests
+```
 
 See http://www.pip-installer.org/en/latest/index.html for instructions
 on installing pip. If you are on a system with easy_install but not
@@ -22,9 +26,11 @@ about virtualenv at http://www.virtualenv.org/
 
 To install from source, run:
 
-  python setup.py install
+```python
+python setup.py install
+```
 
-== Documentation
+## Documentation
 
 Please see https://stripe-requests.readthedocs.org/ for the most up-to-date
 documentation.
