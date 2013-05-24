@@ -29,7 +29,6 @@ import platform
 import logging
 import requests
 
-
 from .compat import *
 from .transport import OAuth2Auth, HTTPAdapter
 from .encoders import JSONEncoder
@@ -42,6 +41,7 @@ __all__ = ['StripeObject', 'Charge', 'Coupon', 'Plan', 'Transfer', 'Recipient',
 
 StripeObjectEncoder = JSONEncoder
 
+STRIPE_CONNECT_URL = 'https://connect.stripe.com/oauth/token'
 STRIPE_API_BASE_V1 = 'https://api.stripe.com/v1/'
 STRIPE_API_BASE = STRIPE_API_BASE_V1
 
@@ -49,6 +49,20 @@ logger = logging.getLogger('stripe')
 
 
 class Stripe(object):
+    @classmethod
+    def from_code(cls, code, client_id, client_secret_key, grant_type='authorization_code'):
+        """
+        Trade a Stripe Connect code for the user's Stripe API keys.
+        """
+        response = requests.post(STRIPE_CONNECT_URL, 
+            auth=OAuth2Auth(client_secret_key), 
+            params={
+                'grant_type': grant_type, 
+                'client_id': client_id, 
+                'code': code,
+            })
+        return cls(api_key=response.json()['access_token'])
+
     def __init__(self, api_key=None, verify_ssl_certs=True, api_version=None, 
             api_base=STRIPE_API_BASE, session_class=requests.Session):
         super(Stripe, self).__init__()
