@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='stripe-requests',
-    version='1.9.1-dev',
+    version='1.9.1-rc1',
     description='Stripe python bindings using requests',
     author='Allan Lei',
     author_email='allanlei@helveticode.com',

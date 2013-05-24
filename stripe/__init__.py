@@ -18,7 +18,7 @@ Full documentation is at <https://stripe-requests.readthedocs.org>.
 """
 
 __title__ = 'stripe-requests'
-__version__ = '1.9.1-dev'
+__version__ = '1.9.1-rc1'
 __author__ = 'Allan Lei'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2013 Allan Lei'
