@@ -1,6 +1,6 @@
 # Stripe Python bindings
 
-[![Build Status](https://travis-ci.org/allanlei/stripe-requests.png?branch=develop)](https://travis-ci.org/allanlei/stripe-requests)
+[![Build Status](https://travis-ci.org/allanlei/stripe-requests.png?branch=master)](https://travis-ci.org/allanlei/stripe-requests)
 
 ## Installation
 
